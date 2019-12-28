@@ -27,7 +27,7 @@ create table trx (
         updated date,
         constraint trx_pk primary key (trxid),
         constraint trx_nn_attr1 check (attr1 is not null),
-        constraint trx_ck_attr2 check (attr1 in ('val1','val2', 'val3','val4')),
+        constraint trx_ck_attr2 check (attr2 in ('val1','val2', 'val3','val4')),
         constraint trx_nn_created check (created is not null),
         constraint trx_fk_user foreign key (userid) references users (userid)
 );

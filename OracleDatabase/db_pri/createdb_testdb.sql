@@ -32,3 +32,5 @@ MAXDATAFILES 500
 
 -- connect system/testdbpw
 
+-- awr every 15min, keep 31 days
+exec dbms_workload_repository.modify_snapshot_settings(interval => 15, retention => 44640) ;
