@@ -1,3 +1,6 @@
+# This is clone of Oracle vagrant-boxes
+[Orignal repo](https://github.com/yszhangit/vagrant-boxes.git)
+
 # vagrant-boxes
 A vagrant box that provisions Oracle software automatically, using Vagrant, an Oracle Linux box and a shell script.
 
