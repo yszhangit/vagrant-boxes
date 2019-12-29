@@ -29,22 +29,28 @@ class Trx(cx_Oracle.Connection):
     row_limit   = 10          # limit of row return from select trx table
     dml_limit   = 10          # limit of insert, delete, update
     dml_max     = 10000       # max value you can overwrite
+    words       = None        # list of word "attr1" can chose from
    
-    def __init__(self, userid = 1):
-        self.userid = userid
-        cred = 'trx/trxpw@testdb_dga'
-        #conn = super(Trx, self).__init__(cred)
+    def __init__(self, cred = None, trx_userid = 1):
+        self.userid = trx_userid
+        if cred == None:
+            cred = 'trx/trxpw@testdb_dga'
+        super().__init__(cred)
+        self.username
         # row limit option available after 12.1
-        #if conn.version > '12':
-        #    self.row_limit = 100
+        if self.version < '12':
+            print(f"warning, database version {self.version} does not support row limit")
         #return conn
-        return super(Trx, self).__init__(cred)
+#        return super().__init__(cred)
 
     # alt-constructor, with pratise classmethod
-#    @classmethod
-#    def from_dblogin(cls, userid = 1, username, password, tnsname):
-#        self.userid = userid
-#        return super(Trx, username,password,tnsname)
+    @classmethod
+    # argument with default should follow arguments without default values
+    # def from_dblogin(cls, trx_userid = 1, username, password, tnsname):
+    def from_dblogin(cls, username, password, tnsname, trx_userid = 1):
+        # the alt-constructor or factory method, can not call __init__ super directly because
+        # only one __init__ is allowd in a class
+        return cls(username + '/' + password + '@' + tnsname, trx_userid)
 
     @classmethod
     def set_dml_limit(cls, limit):
@@ -53,24 +59,35 @@ class Trx(cx_Oracle.Connection):
         else:
             cls.dml_limit = limit
 
-    # no much useful, just pratise
-    def print_users(self):
+    @classmethod
+    def import_words(cls, file_name):
+        # typical linux distro dictionary locatoin: /usr/share/dict
+        cls.words = open(file_name).read().splitlines()
+
+    # get username for this userid
+    @property
+    def trx_username(self):
         cur = self.cursor()
-        cur.execute('select * from users')
-        # using fetchall
-        #rows = cur.fetchall()
-        #for row in rows:
-        #    print(row)
-    
-        # directly from cursor
-        for row in cur:
-            print(row)
+        cur.execute('select name from users where userid='+str(self.userid))
+        row = cur.fetchone()
         cur.close()
+        return row[0]
 
+    # get and set userid
+    @property
+    def trx_userid(self):
+        return self.userid
 
+    @trx_userid.setter
+    def trx_userid(self, trx_userid):
+        self.userid = trx_userid
+
+    # DML operations
+    # insert
     def insert_trx(self, cnt = 1):
         if cnt > self.dml_limit:
             cnt = self.dml_limit
+
         cur = self.cursor()
         print(f"inserting { cnt }")
         stmt = """insert into trx 
@@ -79,8 +96,12 @@ class Trx(cx_Oracle.Connection):
         (seq_trx.nextval, :attr1, :attr2, :userid, sysdate)
         """
         for i in range(cnt):
+            if self.words != None:
+                attr1 = random.sample(self.words, 1)[0]
+            else:
+                attr1 = 'foo'
             param = { 
-                "attr1": 'foo', 
+                "attr1": attr1, 
                 "attr2": random.sample(self.attr2_vals,1)[0], 
                 "userid": self.userid 
                 }
@@ -142,14 +163,25 @@ class Trx(cx_Oracle.Connection):
         cur.close()
         return trxid
 
+    # unnecessary for subclass
+    #def __repr__(self):
+    #    pass
 
-trx = Trx(2)
-#trx = Trx.from_dblogin(2,'trx','trxpw','testdb_dga')
+    def __str__(self):
+        return "trx table DML with userid={}".format(self.userid)
+
+#trx = Trx(2)
+trx = Trx.from_dblogin('trx','trxpw','testdb_dga',2)
+print(trx.trx_username)
+trx.trx_userid = 3
+print(trx.trx_username)
+#print(trx)
 #trx.print_users()
+trx.import_words('/usr/share/dict/cracklib-small')
 trx.insert_trx(10)
-trx.update_trx(3)
+trx.update_trx(7)
 trx.delete_trx(5)
-trx.set_dml_limit(100)
-trx.delete_trx(100)
+#trx.set_dml_limit(100)
+#trx.delete_trx(100)
 trx.commit()
 trx.close()
