@@ -35,11 +35,8 @@ MAXDATAFILES 500
 
 @$ORACLE_HOME/rdbms/admin/utlrp.sql
 
+connect system/testdbpw
 @$ORACLE_HOME/sqlplus/admin/pupbld.sql
-
--- alter user system identified by testdbpw
-
--- connect system/testdbpw
 
 -- awr every 15min, keep 31 days
 exec dbms_workload_repository.modify_snapshot_settings(interval => 15, retention => 44640) ;
