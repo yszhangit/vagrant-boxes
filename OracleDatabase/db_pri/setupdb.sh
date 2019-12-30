@@ -14,3 +14,5 @@ mkdir -p $ORADATA/fra
 
 cp -f $STGDIR/inittestdb.ora $ORACLE_HOME/dbs
 
+# add *.enable_pluggable_database=true to init file to disable PDB
+
