@@ -50,7 +50,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   # change memory size
   config.vm.provider "virtualbox" do |v|
-    v.memory = 2048
+#    v.memory = 2048
+    v.memory = 3000
     v.name = NAME
   end
 
