@@ -20,7 +20,7 @@ create table users (
 
 create table trx (
         trxid number(8),
-        attr1 varchar2(10),
+        attr1 varchar2(100),
         attr2 varchar2(20),
         userid number(3),
         created date,
