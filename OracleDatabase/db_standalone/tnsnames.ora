@@ -1,0 +1,28 @@
+ORCLCDB=localhost:1521/ORCLCDB
+ORCLPDB1= 
+(DESCRIPTION = 
+  (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+  (CONNECT_DATA =
+    (SERVICE_NAME = ORCLPDB1)
+  )
+)
+
+testdb_dga = 
+(DESCRIPTION = 
+  (ADDRESS = (PROTOCOL = TCP)(HOST = vm1)(PORT = 1522))
+  (CONNECT_DATA =
+    (service_name = testdb_dga )
+#    (GLOBAL_NAME = testdb_dga_dgmgrl)
+  )
+)
+
+testdb_dgb = 
+(DESCRIPTION = 
+  (ADDRESS = (PROTOCOL = TCP)(HOST = vm2)(PORT = 1522))
+  (CONNECT_DATA =
+    (service_name = testdb_dgb )
+#    (GLOBAL_NAME = testdb_dgb_dgmgrl)
+  )
+)
+
+
